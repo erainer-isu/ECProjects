@@ -1,0 +1,35 @@
+*
+{
+    background-color: linen;
+}
+th
+{
+    font-size: 25px;
+}
+td
+{
+    font-size: 40px;
+}
+caption
+{
+    font-size: 40px;
+}
+table, th, td
+{
+    border: solid 2px darkslategrey;
+    border-collapse: collapse;
+    column-width: 100px;
+    padding: 35px;
+}
+th, td
+{
+    text-align: center;
+}
+.today
+{
+    background-color: plum;
+}
+.notthismonth
+{
+    background-color: gray;
+}

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>App</title>
+
+  </head>
+
+  <body>
+  
+  <p id="date"></p>
+  <p id="title"></p>
+  <p id="description"></p>
+  <p id="imgname"></p>
+  <p id="photographer"></p>
+  <img id="image" src="" alt="">
+  
+  <script>
+  var request = new XMLHttpRequest();
+  request.open('GET', 'https://api.nasa.gov/planetary/apod?api_key=jT9a9djmlXvr6QGYLXet52uTP4ycNUGYnqdQeCA7', 		true);
+  request.onload = function() {
+  	var data = JSON.parse(this.response);
+    //document.getElementById("photographer").innerHTML = 			copyright;
+    document.getElementById("date").innerHTML = data.date;
+    document.getElementById("title").innerHTML = data.title;
+    document.getElementById("description").innerHTML = 				data.explanation;
+    //document.getElementById("imgname").innerHTML =
+    document.getElementById("image").src = data.url;
+  }
+  request.send();
+  </script>
+  </body>
+</html>

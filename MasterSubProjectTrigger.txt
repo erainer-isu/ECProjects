@@ -1,0 +1,62 @@
+trigger MasterSubProjectTrigger on SubProject__c (before insert, after insert, 
+                                                  before update, after update, 
+                                                  before delete, after delete) 
+{
+    Map<Id, SubProject__c> subp = new Map<Id, SubProject__c>();
+    Map<Id, Project__c> proj = new Map<Id, Project__c>();
+    Map<Id, Site__c> site = new Map<Id, Site__c>();
+    
+    public void newmap()
+    {
+        for(SubProject__c sp: Trigger.New)
+        {
+            subp.put(sp.Project__c, sp);
+        }
+    }
+    
+    public void oldmap()
+    {
+        for(SubProject__c sp: Trigger.Old)
+        {
+            subp.put(sp.Project__c, sp);
+        }
+    }
+    
+    if(Trigger.isBefore)
+    {
+        if(Trigger.isInsert)
+        {
+            
+        }
+        if(Trigger.isUpdate)
+        {
+            
+        }
+        if(Trigger.isDelete)
+        {
+            
+        }
+    }
+    
+    if(Trigger.isAfter)
+    {
+        if(Trigger.isInsert)
+        {
+            newmap();
+            TriggerChallenge dateCheck = new TriggerChallenge (subp, proj, site);
+            dateCheck.dateCheck();
+        }
+        if(Trigger.isUpdate)
+        {
+            newmap();
+            TriggerChallenge dateCheck = new TriggerChallenge (subp, proj, site);
+            dateCheck.dateCheck();
+        }
+        if(Trigger.isDelete)
+        {
+            oldmap();
+            TriggerChallenge deleteCheck = new TriggerChallenge (subp, proj, site);
+            deleteCheck.subDelete();
+        }
+    }
+}
