@@ -1,0 +1,143 @@
+public class TriggerChallenge{
+    Map<Id, SubProject__c> subp = new Map<Id, SubProject__c>();
+    Map<Id, Project__c> proj = new Map<Id, Project__c>();
+    Map<Id, Site__c> site = new Map<Id, Site__c>();
+    
+    public TriggerChallenge(Map<Id, SubProject__c> subproj, Map<Id, Project__c> project, Map<Id, Site__c> newSite)
+    {
+        subp = subproj;
+        proj = project;
+        site = newSite;
+    }
+    
+    //gets the values for the proj and site maps
+    public void setup()
+    {
+        List<Project__c> projectList = new List<Project__c>();
+        projectList = [SELECT Id, Site__c, Start_Date__c FROM Project__c WHERE Id IN :subp.keySet()];
+        for(Project__c p : projectList)
+        {
+            proj.put(p.Site__c, p);
+        }
+        
+        List<Site__c> siteList = new List<Site__c>();
+        siteList = [SELECT Id, Start_Date__c FROM Site__c WHERE Id IN :proj.keySet()];
+        for(Site__c s : siteList)
+        {
+            site.put(s.Id, s);
+        }
+    }
+    
+    
+    public void dateCheck()
+    {
+        setup();
+        System.debug('dc test 1');
+        for(Project__c p : proj.values())
+        {
+            System.debug('dc test 2');
+            if(subp.get(p.Id).Start_Date__c != null && p.Start_Date__c == null)
+            {
+                System.debug('dc test 3');
+                p.Start_Date__c = subp.get(p.Id).Start_Date__c;
+            }
+            
+            System.debug('dc test 4');
+            if(subp.get(p.Id).Start_Date__c != null && site.get(p.Site__c).Start_Date__c == null)
+            {
+                System.debug('dc test 5');
+                site.get(p.Site__c).Start_Date__c = subp.get(p.Id).Start_Date__c;
+            }
+        }
+        
+        
+        System.debug('dc test 6');
+        update proj.values();
+        update site.values();
+    }
+
+    
+    public void subDelete()
+    {
+        setup();
+        System.debug('subd test 1');
+        
+        List<SubProject__c> spd = [SELECT Id, Project__c, Start_Date__c FROM SubProject__c WHERE Project__c IN :proj.values()];
+        System.debug('subd test 2');
+        
+        for(Project__c p : proj.values())
+        {
+            System.debug('subd test 3');
+            p.Start_Date__c = null;
+            
+            System.debug('subd test 4');
+            for(SubProject__c sp : spd)
+            {
+                
+                System.debug('subd test 5');
+                if(!(sp.Start_Date__c > p.Start_Date__c))
+                {
+                    System.debug('subd test 6');
+                    p.Start_Date__c = sp.Start_Date__c;
+                }
+            }
+        }
+        
+        System.debug('subd test 7');
+        update proj.values();
+    }
+    
+    public void projDelete()
+    {
+        setup();
+        System.debug('projd test 1');
+        
+        List<Project__c> pd = [SELECT Id, Site__c, Start_Date__c FROM Project__c WHERE Site__c IN :site.values()];
+        System.debug('projd test 2');
+        
+        for(Site__c s : site.values())
+        {
+            System.debug('projd test 3');
+            s.Start_Date__c = null;
+            
+            System.debug('projd test 4');
+            for(Project__c p : pd)
+            {
+                
+                System.debug('projd test 5');
+                if(!(p.Start_Date__c > s.Start_Date__c))
+                {
+                    System.debug('projd test 6');
+                    s.Start_Date__c = p.Start_Date__c;
+                }
+            }
+        }
+        
+        System.debug('projd test 7');
+        update site.values();
+    }
+    
+    
+    public void projectnumber()
+    {
+        System.debug('project count start');
+        List<Project__c> projects = [SELECT Id, Site__c, Start_Date__c FROM Project__c WHERE Site__c IN :site.values()];
+        for(Site__c s : site.values())
+        {
+            integer index = 0;
+            System.debug('inside the for loop');
+            for(Project__c p : projects)
+            {
+                if(p.Site__c == s.Id)
+                {
+                    index++;
+                }
+            }
+            System.debug('number of projects');
+            System.debug(s.Number_of_Projects__c);
+            s.Number_of_Projects__c = index;
+        }
+        
+        update site.values();
+    }
+}
